@@ -1,0 +1,22 @@
+# Python
+.venv/
+backend/.venv/
+__pycache__/
+*.pyc
+*.pyo
+backend/.env
+*.db
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Next.js
+frontend/.next/
+frontend/node_modules/
+frontend/.env.local
+
+# Misc
+.DS_Store
+*.log
+.env
+Thumbs.db
