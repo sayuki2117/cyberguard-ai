@@ -5,11 +5,14 @@
 #          Switch between providers using the AI_PROVIDER env var.
 # ===============================================================
 
+import logging
 from typing import List, Optional
 
 from openai import AsyncOpenAI
 
 from config import settings
+
+logger = logging.getLogger("cyberguard")
 
 
 def _get_client() -> AsyncOpenAI:
@@ -19,6 +22,9 @@ def _get_client() -> AsyncOpenAI:
     different base_url and API key.
     """
     if settings.ai_provider == "openrouter":
+        if not settings.openrouter_api_key:
+            raise ValueError("OPENROUTER_API_KEY is required when AI_PROVIDER=openrouter")
+        logger.info("Using OpenRouter for chat completion; model=%s", settings.openrouter_model)
         return AsyncOpenAI(
             api_key=settings.openrouter_api_key,
             base_url="https://openrouter.ai/api/v1",
@@ -27,6 +33,9 @@ def _get_client() -> AsyncOpenAI:
                 "X-Title": "CyberGuard AI",
             },
         )
+    if not settings.openai_api_key:
+        raise ValueError("OPENAI_API_KEY is required when AI_PROVIDER=openai")
+    logger.info("Using OpenAI for chat completion; model=%s", settings.openai_model)
     return AsyncOpenAI(api_key=settings.openai_api_key)
 
 
@@ -76,9 +85,6 @@ async def chat_completion(
     Generate a chat response.
     context = RAG-retrieved knowledge base content to inject.
     """
-    client = _get_client()
-    model = _get_model()
-
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
     # Inject RAG context if available
@@ -100,12 +106,34 @@ async def chat_completion(
 
     messages.append({"role": "user", "content": message})
 
-    response = await client.chat.completions.create(
-        model=model,
-        messages=messages,
-        max_tokens=1000,
-        temperature=temperature,
-    )
+    client = _get_client()
+    model = _get_model()
+
+    try:
+        response = await client.chat.completions.create(
+            model=model,
+            messages=messages,
+            max_tokens=1000,
+            temperature=temperature,
+        )
+    except Exception as exc:
+        if settings.ai_provider == "openrouter":
+            logger.warning(
+                "OpenRouter chat completion failed, falling back to OpenAI: %s",
+                exc,
+            )
+            if not settings.openai_api_key:
+                raise
+            client = AsyncOpenAI(api_key=settings.openai_api_key)
+            model = settings.openai_model
+            response = await client.chat.completions.create(
+                model=model,
+                messages=messages,
+                max_tokens=1000,
+                temperature=temperature,
+            )
+        else:
+            raise
 
     return response.choices[0].message.content.strip()
 
@@ -113,8 +141,7 @@ async def chat_completion(
 async def get_embedding(text: str) -> List[float]:
     """
     Generate a vector embedding for a piece of text.
-    Embeddings are used for RAG similarity search.
-    We always use OpenAI for embeddings (consistent dimensions).
+    OpenAI is used for embeddings regardless of the chat provider.
     """
     client = AsyncOpenAI(api_key=settings.openai_api_key)
     response = await client.embeddings.create(
@@ -132,14 +159,36 @@ async def structured_completion(prompt: str, temperature: float = 0.2) -> str:
     client = _get_client()
     model = _get_model()
 
-    response = await client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": prompt},
-        ],
-        max_tokens=1500,
-        temperature=temperature,
-    )
+    try:
+        response = await client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": prompt},
+            ],
+            max_tokens=1500,
+            temperature=temperature,
+        )
+    except Exception as exc:
+        if settings.ai_provider == "openrouter":
+            logger.warning(
+                "OpenRouter structured completion failed, falling back to OpenAI: %s",
+                exc,
+            )
+            if not settings.openai_api_key:
+                raise
+            client = AsyncOpenAI(api_key=settings.openai_api_key)
+            model = settings.openai_model
+            response = await client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": prompt},
+                ],
+                max_tokens=1500,
+                temperature=temperature,
+            )
+        else:
+            raise
 
     return response.choices[0].message.content.strip()

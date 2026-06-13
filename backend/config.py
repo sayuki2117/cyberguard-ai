@@ -14,16 +14,18 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     # -- OpenAI --------------------------------------------------
+    # OpenAI is used for embeddings.
     openai_api_key: str
     openai_model: str = "gpt-4o"
     openai_embedding_model: str = "text-embedding-3-small"
 
     # -- OpenRouter ---------------------------------------------
-    openrouter_api_key: str = ""
+    # OpenRouter is used for chat completion by default.
+    openrouter_api_key: str
     openrouter_model: str = "openai/gpt-4o"
 
     # -- AI Provider --------------------------------------------
-    ai_provider: Literal["openai", "openrouter"] = "openai"
+    ai_provider: Literal["openai", "openrouter"] = "openrouter"
 
     # -- Supabase -----------------------------------------------
     supabase_url: str

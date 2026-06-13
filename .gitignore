@@ -1,22 +1,42 @@
-# Python
+# Python virtual environment — never commit this
 .venv/
-backend/.venv/
+venv/
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
+.Python
+*.egg-info/
+
+# Secret files — CRITICAL: never commit these
 backend/.env
-*.db
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-
-# Next.js
-frontend/.next/
-frontend/node_modules/
 frontend/.env.local
-
-# Misc
-.DS_Store
-*.log
 .env
+.env.local
+.env.production
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Next.js build output
+frontend/.next/
+frontend/out/
+
+# Node modules — too large to commit
+frontend/node_modules/
+node_modules/
+
+# OS files
+.DS_Store
 Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/settings.json
+.idea/

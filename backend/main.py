@@ -13,7 +13,7 @@ from slowapi.middleware import SlowAPIMiddleware
 from config import settings
 from middleware.rate_limiter import limiter
 from middleware.security import SecurityHeadersMiddleware
-from routes import auth, chat, knowledge
+from routes import admin, auth, chat, knowledge, password, phishing, quiz, tips
 
 
 app = FastAPI(
@@ -46,9 +46,14 @@ app.add_middleware(
 )
 
 # API routes.
+app.include_router(admin.router, prefix="/api")
 app.include_router(auth.router, prefix="/api")
 app.include_router(chat.router, prefix="/api")
 app.include_router(knowledge.router, prefix="/api")
+app.include_router(password.router, prefix="/api")
+app.include_router(phishing.router, prefix="/api")
+app.include_router(quiz.router, prefix="/api")
+app.include_router(tips.router, prefix="/api")
 
 
 @app.get("/")
