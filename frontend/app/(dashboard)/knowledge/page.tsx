@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Upload, Link, Trash2, BookOpen, Youtube, Globe } from 'lucide-react'
+import { Upload, Link, Trash2, BookOpen, Globe } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -171,7 +171,11 @@ export default function KnowledgePage() {
 
               <div className="space-y-4 rounded-3xl border border-[#1e2d4a] bg-[#07101e] p-6">
                 <div className="flex items-center gap-3 text-lg font-semibold text-white">
-                  {isYouTube ? <Youtube className="h-5 w-5" /> : <Globe className="h-5 w-5" />}
+                  {isYouTube ? (
+                    <span className="inline-flex h-5 w-5 items-center justify-center">▶️</span>
+                  ) : (
+                    <Globe className="h-5 w-5" />
+                  )}
                   <span>{isYouTube ? 'YouTube Video' : 'Website URL'}</span>
                 </div>
                 <div className="space-y-3">
