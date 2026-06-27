@@ -141,10 +141,10 @@ export default function PhishingForm() {
 
             <Button
               onClick={() => mutation.mutate()}
-              disabled={mutation.isLoading || !emailContent.trim()}
+              disabled={mutation.isPending || !emailContent.trim()}
               className="w-full bg-red-600 hover:bg-red-500 text-white font-semibold disabled:opacity-40"
             >
-              {mutation.isLoading ? '🔍 Analysing...' : '🔍 Analyse for Phishing'}
+              {mutation.isPending ? '🔍 Analysing...' : '🔍 Analyse for Phishing'}
             </Button>
           </CardContent>
         </Card>

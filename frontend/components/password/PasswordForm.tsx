@@ -154,10 +154,10 @@ export default function PasswordForm() {
 
           <Button
             onClick={() => mutation.mutate()}
-            disabled={mutation.isLoading || !password.trim()}
+            disabled={mutation.isPending || !password.trim()}
             className="w-full bg-blue-600 hover:bg-blue-500 font-semibold disabled:opacity-40"
           >
-            {mutation.isLoading ? '🔍 Analysing...' : '🔍 Analyse Password'}
+            {mutation.isPending ? '🔍 Analysing...' : '🔍 Analyse Password'}
           </Button>
         </CardContent>
       </Card>

@@ -193,10 +193,10 @@ export default function QuizCard() {
 
           <Button
             onClick={() => generateMutation.mutate()}
-            disabled={generateMutation.isLoading}
+            disabled={generateMutation.isPending}
             className="w-full bg-purple-600 hover:bg-purple-500 font-semibold disabled:opacity-40"
           >
-            {generateMutation.isLoading ? '🧠 Generating...' : '🧠 Generate Quiz'}
+            {generateMutation.isPending ? '🧠 Generating...' : '🧠 Generate Quiz'}
           </Button>
         </CardContent>
       </Card>
@@ -259,10 +259,10 @@ export default function QuizCard() {
               ) : (
                 <Button
                   onClick={() => submitMutation.mutate()}
-                  disabled={answeredCount < totalQuestions || submitMutation.isLoading}
+                  disabled={answeredCount < totalQuestions || submitMutation.isPending}
                   className="flex-1 bg-green-600 hover:bg-emerald-500 disabled:opacity-40"
                 >
-                  {submitMutation.isLoading ? 'Submitting...' : `✅ Submit (${answeredCount}/${totalQuestions})`}
+                  {submitMutation.isPending ? 'Submitting...' : `✅ Submit (${answeredCount}/${totalQuestions})`}
                 </Button>
               )}
             </div>
