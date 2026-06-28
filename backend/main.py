@@ -4,6 +4,8 @@
 #          Registers all routers, middleware, and startup config.
 # ===============================================================
 
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
@@ -36,9 +38,11 @@ app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        settings.frontend_url,
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        "https://cyberguard-aksg0vlt7-sayuki-s-projects.vercel.app",
+        "https://cyberguard-ai-indol.vercel.app",
+        os.getenv("FRONTEND_URL", ""),
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
