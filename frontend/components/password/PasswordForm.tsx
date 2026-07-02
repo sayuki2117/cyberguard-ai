@@ -10,7 +10,7 @@ import { Progress } from '@/components/ui/progress'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
-import api from '@/lib/api'
+import api, { getApiErrorMessage } from '@/lib/api'
 import toast from 'react-hot-toast'
 import type { PasswordResult } from '@/types'
 
@@ -67,8 +67,8 @@ export default function PasswordForm() {
       setResult(data)
       toast.success('Analysis complete!')
     },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.detail || err?.message || 'Check failed.')
+    onError: (err: unknown) => {
+      toast.error(getApiErrorMessage(err, 'Check failed.'))
     },
   })
 
@@ -216,7 +216,7 @@ export default function PasswordForm() {
         <div className="grid gap-6 xl:grid-cols-2">
           <Card className="border-[#1e2d4a] bg-[#0f1729]">
             <CardHeader>
-              <CardTitle>✅ What's Good</CardTitle>
+              <CardTitle>✅ What&apos;s Good</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {result.what_is_good.length === 0 ? (

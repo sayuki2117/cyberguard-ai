@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { useAuthStore } from '@/store/authStore'
-import api from '@/lib/api'
+import api, { getApiErrorMessage } from '@/lib/api'
 import toast from 'react-hot-toast'
 import type { KnowledgeSource } from '@/types'
 
@@ -55,7 +55,7 @@ export default function KnowledgePage() {
       setFileTitle('')
       qc.invalidateQueries({ queryKey: ['knowledge-sources'] })
     },
-    onError: (err: any) => toast.error(err.response?.data?.detail || 'Upload failed.'),
+    onError: (err: unknown) => toast.error(getApiErrorMessage(err, 'Upload failed.')),
   })
 
   const urlMutation = useMutation({
@@ -72,7 +72,7 @@ export default function KnowledgePage() {
       setUrlTitle('')
       qc.invalidateQueries({ queryKey: ['knowledge-sources'] })
     },
-    onError: (err: any) => toast.error(err.response?.data?.detail || 'Ingestion failed.'),
+    onError: (err: unknown) => toast.error(getApiErrorMessage(err, 'Ingestion failed.')),
   })
 
   const deleteMutation = useMutation({
@@ -83,7 +83,7 @@ export default function KnowledgePage() {
       toast.success('Source deleted.')
       qc.invalidateQueries({ queryKey: ['knowledge-sources'] })
     },
-    onError: (err: any) => toast.error(err.response?.data?.detail || 'Delete failed.'),
+    onError: (err: unknown) => toast.error(getApiErrorMessage(err, 'Delete failed.')),
   })
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

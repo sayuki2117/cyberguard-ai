@@ -39,6 +39,8 @@ class Settings(BaseSettings):
 
     # -- App -----------------------------------------------------
     frontend_url: str = "http://localhost:3000"
+    cors_origins: str = ""
+    cors_origin_regex: str = r"https://.*\.vercel\.app"
     environment: str = "development"
     max_upload_size_mb: int = 10
 
@@ -56,6 +58,21 @@ class Settings(BaseSettings):
     @property
     def is_production(self) -> bool:
         return self.environment == "production"
+
+    @property
+    def allowed_origins(self) -> list[str]:
+        defaults = [
+            self.frontend_url,
+            "https://cyberguard-ai-indol.vercel.app",
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+        ]
+        configured = [
+            origin.strip()
+            for origin in self.cors_origins.split(",")
+            if origin.strip()
+        ]
+        return list(dict.fromkeys([*defaults, *configured]))
 
     @property
     def max_upload_bytes(self) -> int:

@@ -8,3 +8,11 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: "3.12.0"
+      - key: ENVIRONMENT
+        value: "production"
+      - key: FRONTEND_URL
+        value: "https://cyberguard-ai-indol.vercel.app"
+      - key: CORS_ORIGINS
+        value: "https://cyberguard-ai-indol.vercel.app"
+      - key: CORS_ORIGIN_REGEX
+        value: "https://.*\\.vercel\\.app"

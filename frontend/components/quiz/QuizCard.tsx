@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { Brain, Trophy, RotateCcw, CheckCircle, XCircle } from 'lucide-react'
+import { Brain, RotateCcw, CheckCircle, XCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
@@ -10,11 +10,32 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { cn } from '@/lib/utils'
 import api from '@/lib/api'
 import toast from 'react-hot-toast'
-import type { QuizData, QuizQuestion } from '@/types'
+import type { QuizData } from '@/types'
 
 type QuizPhase = 'config' | 'active' | 'results'
 
 type AnswerMap = Record<string, string>
+
+type QuizDifficulty = typeof DIFFICULTIES[number]
+
+interface QuizAnswerResult {
+  question_id: number
+  question: string
+  user_answer: string
+  user_text: string
+  correct: string
+  correct_text: string
+  is_correct: boolean
+  explanation: string
+}
+
+interface QuizResult {
+  score: number
+  total: number
+  percentage: number
+  passed: boolean
+  answers: QuizAnswerResult[]
+}
 
 const TOPICS = [
   { id: 'general', label: 'General', icon: '🛡️' },
@@ -32,11 +53,11 @@ const DIFFICULTIES = ['beginner', 'intermediate', 'advanced'] as const
 export default function QuizCard() {
   const [phase, setPhase] = useState<QuizPhase>('config')
   const [topic, setTopic] = useState<string>('general')
-  const [difficulty, setDifficulty] = useState<string>('beginner')
+  const [difficulty, setDifficulty] = useState<QuizDifficulty>('beginner')
   const [numQ, setNumQ] = useState<number>(5)
   const [quiz, setQuiz] = useState<QuizData | null>(null)
   const [answers, setAnswers] = useState<AnswerMap>({})
-  const [results, setResults] = useState<any | null>(null)
+  const [results, setResults] = useState<QuizResult | null>(null)
   const [currentQ, setCurrentQ] = useState<number>(0)
 
   const generateMutation = useMutation({
@@ -67,7 +88,7 @@ export default function QuizCard() {
         answers,
         questions: quiz.questions,
       })
-      return data
+      return data as QuizResult
     },
     onSuccess: (data) => {
       setResults(data)
@@ -126,7 +147,7 @@ export default function QuizCard() {
             </div>
           </div>
           <Badge className="rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-300">
-            {DIFFICULTIES.includes(difficulty as any) ? difficulty : 'Beginner'}
+            {DIFFICULTIES.includes(difficulty) ? difficulty : 'beginner'}
           </Badge>
         </CardHeader>
 
@@ -309,7 +330,7 @@ export default function QuizCard() {
         </Card>
 
         <div className="space-y-4">
-          {results.answers.map((a: any, index: number) => (
+          {results.answers.map((a, index) => (
             <Card key={`review-${index}`} className="border-[#1e2d4a] bg-[#0f1729]">
               <CardHeader className="items-start gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-300">

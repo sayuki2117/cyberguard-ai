@@ -5,10 +5,34 @@
 //          Handles 401 errors globally (auto-logout on token expiry).
 // ═══════════════════════════════════════════════════════════════
 
-import axios from 'axios'
+import axios, { isAxiosError } from 'axios'
+
+function withApiPath(url: string) {
+  if (!url) {
+    return '/api'
+  }
+
+  const trimmedUrl = url.replace(/\/$/, '')
+  return trimmedUrl.endsWith('/api') ? trimmedUrl : `${trimmedUrl}/api`
+}
+
+function getBaseUrl() {
+  const configuredUrl = process.env.NEXT_PUBLIC_API_URL || ''
+
+  if (typeof window === 'undefined') {
+    return withApiPath(configuredUrl)
+  }
+
+  const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+  if (isLocalhost) {
+    return withApiPath(configuredUrl)
+  }
+
+  return '/api'
+}
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: getBaseUrl(),
   headers: { 'Content-Type': 'application/json' },
   timeout: 30000,   // 30 second timeout
 })
@@ -39,3 +63,15 @@ api.interceptors.response.use(
 )
 
 export default api
+
+export function getApiErrorMessage(error: unknown, fallback: string) {
+  if (isAxiosError<{ detail?: string }>(error)) {
+    return error.response?.data?.detail || error.message || fallback
+  }
+
+  if (error instanceof Error) {
+    return error.message
+  }
+
+  return fallback
+}

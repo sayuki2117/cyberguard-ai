@@ -17,7 +17,7 @@ import {
   CardContent,
 } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-import api from '@/lib/api'
+import api, { getApiErrorMessage } from '@/lib/api'
 import toast from 'react-hot-toast'
 import type { PhishingResult, PhishingIndicator } from '@/types'
 
@@ -73,8 +73,8 @@ export default function PhishingForm() {
       setResult(data)
       toast.success('Analysis complete!')
     },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.detail || err?.message || 'Analysis failed.')
+    onError: (err: unknown) => {
+      toast.error(getApiErrorMessage(err, 'Analysis failed.'))
     },
   })
 
