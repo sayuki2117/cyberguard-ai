@@ -31,7 +31,7 @@ export const useAuthStore = create<AuthState>()(
       login: async (email: string, password: string) => {
         set({ isLoading: true })
         try {
-          const { data } = await api.post('/auth/login', { email, password })
+          const { data } = await api.post('/api/auth/login', { email, password })
           localStorage.setItem('cyberguard_token', data.access_token)
           set({
             user:            data.user,
@@ -48,7 +48,7 @@ export const useAuthStore = create<AuthState>()(
       register: async (email: string, password: string, fullName: string) => {
         set({ isLoading: true })
         try {
-          const { data } = await api.post('/auth/register', {
+          const { data } = await api.post('/api/auth/register', {
                                   email,
                                   password,
                                   full_name: fullName,
