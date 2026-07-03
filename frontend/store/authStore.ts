@@ -49,10 +49,10 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true })
         try {
           const { data } = await api.post('/auth/register', {
-            email,
-            password,
-            full_name: fullName,
-          })
+                                  email,
+                                  password,
+                                  full_name: fullName,
+                                })
           localStorage.setItem('cyberguard_token', data.access_token)
           set({
             user:            data.user,

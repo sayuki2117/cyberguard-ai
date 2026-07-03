@@ -19,12 +19,7 @@ function withApiPath(url: string) {
 function getBaseUrl() {
   const configuredUrl = process.env.NEXT_PUBLIC_API_URL || ''
 
-  if (typeof window === 'undefined') {
-    return withApiPath(configuredUrl)
-  }
-
-  const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname)
-  if (isLocalhost) {
+  if (configuredUrl) {
     return withApiPath(configuredUrl)
   }
 
@@ -34,7 +29,7 @@ function getBaseUrl() {
 const api = axios.create({
   baseURL: getBaseUrl(),
   headers: { 'Content-Type': 'application/json' },
-  timeout: 30000,   // 30 second timeout
+  timeout: 30000, // 30 second timeout
 })
 
 // Request interceptor: attach token to every request automatically
@@ -46,6 +41,7 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
+
   return config
 })
 
@@ -58,6 +54,7 @@ api.interceptors.response.use(
       localStorage.removeItem('cyberguard_user')
       window.location.href = '/login'
     }
+
     return Promise.reject(error)
   }
 )
